@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package master;
+
+service Master {
+  rpc put_file(FileRequest) returns (PutFileResponse);
+}
+
+message FileRequest{
+    string fileName=1;
+    int32 fileSize=2;
+}
+
+message PutFileResponse{
+    string message=1;
+}
