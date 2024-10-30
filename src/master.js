@@ -58,15 +58,17 @@ class Master{
     allocate_blocks(fileName,numberOfBlocks){
 
         // blockid: [{ip,port},{ip,port}]
-        block_to_minions = [];
+        // [{blockId:[{minionIp,port}]}]
+        let block_to_minions = [];
 
         for(let i = 0 ;i<numberOfBlocks;i++){
             let block_id = uuid();
             let minions = getNRandomNumbers(Object.keys(this.minions),this.replication_factor);
+            console.log("random minions",minions);
             this.file_blocks[fileName].push(block_id);
             this.block_minion[block_id] = minions;
 
-            block_to_minions.push({block_id,minion_addr:minions.map(id=>this.minions[id])});
+            block_to_minions.push({block_id,block_addr:minions.map(id=>this.minions[id])});
         }
         return block_to_minions;
     }
@@ -81,7 +83,9 @@ function main(){
         enums: String,
         defaults: true,
         oneofs: true
-    })
+    });
+
+    const master = new Master();
 
     const masterProto = grpc.loadPackageDefinition(packageDefinition).master;
 
@@ -92,15 +96,14 @@ function main(){
             const fileName = call.request.fileName;
             const fileSize = call.request.fileSize;
             console.log("Put file call receieved with ",fileName,fileSize);
-
-            callback(null,{message:'request completed'});
+            const blocks = master.put_file(fileName,fileSize);
+            callback(null,{blocks});
         }
     });
 
 
     server.bindAsync('127.0.0.1:8000',grpc.ServerCredentials.createInsecure(),(err,port)=>{
-        // server.start();
-        console.log("server is listening at ",port);
+        console.log("Master server is listening at ",port);
     })
 }
 

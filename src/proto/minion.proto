@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package minion;
+
+service Minion{
+    rpc put(MinPutRequest) returns (Empty);
+}
+
+message MinPutRequest{
+    string blockId =1;
+    bytes data =2;
+    repeated MinionConfig minions = 3;
+}
+
+
+message MinionConfig{
+    string ip =1;
+    int32 port =2;
+}
+
+message Empty{}

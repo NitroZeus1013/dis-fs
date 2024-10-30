@@ -12,5 +12,15 @@ message FileRequest{
 }
 
 message PutFileResponse{
-    string message=1;
+    repeated MetaServerBlocks blocks =1 ;
+}
+
+message MetaServerBlocks{
+   string block_id =1;
+   repeated MetaBlockInfo block_addr = 2;
+}
+
+message MetaBlockInfo{
+  string ip = 1;
+  int32 port = 2;
 }
